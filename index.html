@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood & Hematology Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 24px;
+            border: 1px solid #333;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        h1 {
+            color: #ff6b6b;
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+        }
+        .motivation {
+            color: #bb86fc;
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-top: 0;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #ff6b6b, #bb86fc);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            position: absolute;
+            right: 10px;
+            top: -25px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .question-container {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        .question-number {
+            font-weight: 600;
+            color: #bb86fc;
+            margin-bottom: 8px;
+        }
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option {
+            padding: 14px 16px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #2a2a2a;
+        }
+        .option:hover {
+            border-color: #bb86fc;
+            background-color: #333;
+        }
+        .option.selected {
+            border-color: #bb86fc;
+            background-color: #333;
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+        }
+        .option.correct {
+            border-color: #4caf50;
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+        .option.incorrect {
+            border-color: #f44336;
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #bb86fc);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .results-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .feedback {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .correct-feedback {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+        }
+        .incorrect-feedback {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #f44336;
+        }
+        .restart-btn {
+            margin-top: 20px;
+        }
+        .question-feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+        .correct-answer {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+        }
+        .incorrect-answer {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #f44336;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #bb86fc;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #aaa;
+        }
+        .final-score {
+            font-size: 32px;
+            font-weight: bold;
+            color: #bb86fc;
+            margin: 20px 0;
+        }
+        .performance-message {
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+        }
+        .heart {
+            color: #ff6b6b;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header-container">
+            <h1>Blood & Hematology Quiz</h1>
+            <p class="motivation">kaya mo yan babyyyyy! <span class="heart">🥰</span> - jeff</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-text" id="progress-text">0/10</div>
+        </div>
+        
+        <div id="quiz-content">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+        
+        <div class="navigation">
+            <button id="prev-btn" disabled>Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz questions with no repeats
+        const quizQuestions = [
+            {
+                question: "Which component of blood is primarily responsible for the osmotic pressure that helps maintain fluid balance between blood and tissues?",
+                options: ["Albumin", "Globulins", "Fibrinogen", "Hemoglobin"],
+                correctAnswer: 0,
+                explanation: "Albumin acts as an important blood buffer and contributes significantly to the osmotic pressure of blood, helping to maintain fluid balance between blood and tissues."
+            },
+            {
+                question: "In a patient with chronic tuberculosis, which leukocyte would you expect to see elevated in a differential count?",
+                options: ["Neutrophils", "Eosinophils", "Monocytes", "Basophils"],
+                correctAnswer: 2,
+                explanation: "Monocytes transform into macrophages that are particularly effective at fighting chronic infections like tuberculosis."
+            },
+            {
+                question: "What is the primary pathophysiological mechanism in sickle cell anemia that leads to clinical symptoms?",
+                options: ["Decreased oxygen-carrying capacity of hemoglobin", "Abnormal hemoglobin causing RBCs to become rigid and misshapen", "Autoimmune destruction of erythrocytes", "Deficiency in clotting factors"],
+                correctAnswer: 1,
+                explanation: "In sickle cell anemia, abnormal hemoglobin forms sharp, spike-like structures that cause RBCs to become rigid and sickle-shaped, leading to vaso-occlusive crises and other complications."
+            },
+            {
+                question: "Which condition would most likely result from a deficiency of intrinsic factor rather than a primary bone marrow disorder?",
+                options: ["Iron-deficiency anemia", "Pernicious anemia", "Aplastic anemia", "Sickle cell anemia"],
+                correctAnswer: 1,
+                explanation: "Pernicious anemia results from a deficiency of intrinsic factor, which is necessary for vitamin B12 absorption, leading to impaired RBC production."
+            },
+            {
+                question: "What is the primary function of positive chemotaxis in leukocytes?",
+                options: ["To facilitate diapedesis through vessel walls", "To locate areas of tissue damage and infection", "To enhance phagocytic activity", "To promote antibody production"],
+                correctAnswer: 1,
+                explanation: "Positive chemotaxis allows leukocytes to detect and move toward chemical signals released at sites of tissue damage or infection."
+            },
+            {
+                question: "In which of the following conditions would you expect to see a significant increase in reticulocyte count?",
+                options: ["Aplastic anemia", "Chronic kidney disease", "Acute hemorrhage", "Leukemia"],
+                correctAnswer: 2,
+                explanation: "Following acute hemorrhage, the bone marrow increases production of RBCs, leading to elevated reticulocyte counts as young RBCs are released into circulation."
+            },
+            {
+                question: "Which blood component is derived from megakaryocytes and functions primarily in hemostasis?",
+                options: ["Erythrocytes", "Lymphocytes", "Platelets", "Monocytes"],
+                correctAnswer: 2,
+                explanation: "Platelets are cell fragments derived from megakaryocytes that play a crucial role in hemostasis by forming platelet plugs at sites of vascular injury."
+            },
+            {
+                question: "What is the primary physiological significance of the ABO blood group system in transfusion medicine?",
+                options: ["It determines susceptibility to certain infections", "It influences oxygen-carrying capacity of blood", "It predicts compatibility for organ transplantation", "It determines potential for agglutination reactions"],
+                correctAnswer: 3,
+                explanation: "The ABO blood group system is critical in transfusion medicine because mismatched transfusions can cause agglutination reactions where antibodies bind to foreign RBC antigens, leading to potentially fatal hemolysis."
+            },
+            {
+                question: "Which laboratory finding would be most characteristic of a patient with thrombocytopenia?",
+                options: ["Prolonged bleeding time with normal coagulation tests", "Elevated hematocrit with increased blood viscosity", "Decreased erythrocyte count with pale conjunctiva", "Increased leukocyte count with left shift"],
+                correctAnswer: 0,
+                explanation: "Thrombocytopenia (low platelet count) primarily affects primary hemostasis, leading to prolonged bleeding time, while coagulation tests (which measure secondary hemostasis) typically remain normal."
+            },
+            {
+                question: "What is the primary mechanism by which erythropoietin stimulates red blood cell production?",
+                options: ["Direct stimulation of hemoglobin synthesis in mature erythrocytes", "Promotion of stem cell differentiation into erythroid lineage", "Enhancement of iron absorption from the gastrointestinal tract", "Stimulation of splenic release of stored erythrocytes"],
+                correctAnswer: 1,
+                explanation: "Erythropoietin, produced primarily by the kidneys in response to hypoxia, stimulates the differentiation of hematopoietic stem cells into the erythroid lineage, increasing RBC production."
+            }
+        ];
+
+        // DOM elements
+        const quizContent = document.getElementById('quiz-content');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        // Quiz state
+        let currentQuestion = 0;
+        let userAnswers = new Array(quizQuestions.length).fill(null);
+        let quizCompleted = false;
+
+        // Initialize the quiz
+        function initQuiz() {
+            showQuestion(currentQuestion);
+            updateProgressBar();
+            updateNavigationButtons();
+        }
+
+        // Display current question
+        function showQuestion(index) {
+            const question = quizQuestions[index];
+            
+            let optionsHTML = '';
+            question.options.forEach((option, i) => {
+                const isSelected = userAnswers[index] === i;
+                const optionClass = isSelected ? 'option selected' : 'option';
+                
+                optionsHTML += `
+                    <div class="${optionClass}" data-index="${i}" tabindex="0" role="radio" aria-checked="${isSelected}">
+                        ${option}
+                    </div>
+                `;
+            });
+            
+            quizContent.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Question ${index + 1} of ${quizQuestions.length}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options-container" role="radiogroup">
+                        ${optionsHTML}
+                    </div>
+                    <div class="question-feedback" id="question-feedback"></div>
+                </div>
+            `;
+            
+            // Add event listeners to options
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', handleOptionSelect);
+                option.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleOptionSelect(e);
+                    }
+                });
+            });
+            
+            // Show feedback if answer was already given
+            if (userAnswers[index] !== null) {
+                showQuestionFeedback(index);
+            }
+        }
+
+        // Handle option selection
+        function handleOptionSelect(e) {
+            const selectedOption = e.currentTarget;
+            const selectedIndex = parseInt(selectedOption.getAttribute('data-index'));
+            
+            // Update user's answer
+            userAnswers[currentQuestion] = selectedIndex;
+            
+            // Update UI
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+                option.setAttribute('aria-checked', 'false');
+            });
+            
+            selectedOption.classList.add('selected');
+            selectedOption.setAttribute('aria-checked', 'true');
+            
+            // Show feedback
+            showQuestionFeedback(currentQuestion);
+            
+            // Enable next button
+            nextBtn.disabled = false;
+        }
+
+        // Show feedback for current question
+        function showQuestionFeedback(index) {
+            const feedback = document.getElementById('question-feedback');
+            const userAnswer = userAnswers[index];
+            const correctAnswer = quizQuestions[index].correctAnswer;
+            const isCorrect = userAnswer === correctAnswer;
+            
+            if (userAnswer !== null) {
+                feedback.style.display = 'block';
+                feedback.className = 'question-feedback ' + (isCorrect ? 'correct-answer' : 'incorrect-answer');
+                
+                if (isCorrect) {
+                    feedback.innerHTML = `<strong>Correct!</strong> ${quizQuestions[index].explanation}`;
+                } else {
+                    feedback.innerHTML = `
+                        <strong>Incorrect.</strong> The correct answer is: <strong>${quizQuestions[index].options[correctAnswer]}</strong><br>
+                        ${quizQuestions[index].explanation}
+                    `;
+                }
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${currentQuestion + 1}/${quizQuestions.length}`;
+        }
+
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = userAnswers[currentQuestion] === null;
+            
+            if (currentQuestion === quizQuestions.length - 1) {
+                nextBtn.textContent = 'Finish Quiz';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        // Show quiz results
+        function showResults() {
+            let score = 0;
+            let resultsHTML = '<div class="results-container"><h2>Quiz Results</h2>';
+            
+            // Calculate score
+            quizQuestions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    score++;
+                }
+            });
+            
+            const percentage = Math.round((score / quizQuestions.length) * 100);
+            
+            // Performance message
+            let performanceMessage = '';
+            if (percentage >= 90) {
+                performanceMessage = 'Excellent! You have mastered blood and hematology concepts.';
+            } else if (percentage >= 80) {
+                performanceMessage = 'Great job! You have a strong understanding of blood and hematology.';
+            } else if (percentage >= 70) {
+                performanceMessage = 'Good work! You have a solid foundation in blood concepts.';
+            } else if (percentage >= 60) {
+                performanceMessage = 'Not bad! Review the concepts you missed to improve.';
+            } else {
+                performanceMessage = 'Keep studying! Review the blood and hematology materials.';
+            }
+            
+            resultsHTML += `
+                <div class="final-score">${score}/${quizQuestions.length} (${percentage}%)</div>
+                <div class="performance-message">${performanceMessage}</div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">${score}</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${quizQuestions.length - score}</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${percentage}%</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                </div>
+            `;
+            
+            // Detailed feedback for each question
+            quizQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                resultsHTML += `
+                    <div class="feedback ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}">
+                        <strong>Question ${index + 1}:</strong> ${question.question}<br>
+                        <strong>Your answer:</strong> ${question.options[userAnswer]}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${question.options[question.correctAnswer]}<br>` : ''}
+                        <strong>Explanation:</strong> ${question.explanation}
+                    </div>
+                `;
+            });
+            
+            resultsHTML += `
+                <button class="restart-btn" id="restart-btn">Restart Quiz</button>
+            </div>`;
+            
+            quizContent.innerHTML = resultsHTML;
+            document.getElementById('restart-btn').addEventListener('click', restartQuiz);
+            
+            // Hide navigation buttons
+            document.querySelector('.navigation').style.display = 'none';
+            progressBar.style.width = '100%';
+        }
+
+        // Restart the quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            quizCompleted = false;
+            
+            document.querySelector('.navigation').style.display = 'flex';
+            initQuiz();
+        }
+
+        // Event listeners for navigation buttons
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateProgressBar();
+                updateNavigationButtons();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < quizQuestions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateProgressBar();
+                updateNavigationButtons();
+            } else {
+                // Finish quiz
+                showResults();
+                quizCompleted = true;
+            }
+        });
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+</html>
